@@ -32,7 +32,7 @@ This project is 100% organic and best served cold with ranch and carrots. 🥬
 
 ### Project status
 
-The original author, [@natemcmaster] lost interest in developing new features. This fork is maintained by [Archon Systems Inc.](https://www.archonsystems.com/)
+The original author, [@natemcmaster](https://github.com/natemcmaster) lost interest in developing new features. This fork is maintained by [Archon Systems Inc.](https://www.archonsystems.com/)
 
 This fork contains several enhancements:
 1. Support multi-instance deployment such as with [YARP](https://github.com/microsoft/reverse-proxy).
