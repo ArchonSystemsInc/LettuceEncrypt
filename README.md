@@ -91,7 +91,7 @@ A few required options should be set, typically via the appsettings.json file.
 ```
 
 ## Advanced Usage
-Running multiple instances of your service can be supported with a bit of additional work. It is recommended that you only run the certificate generating services (ACME services) on one instances within your deployment.
+Running multiple instances of your service can be supported with a bit of additional work. It is recommended that you only run the certificate generating services (ACME services) on one instance within your deployment.
 
 #### Example: Run ACME services dynamically
 ```csharp
