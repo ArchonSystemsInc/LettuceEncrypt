@@ -1,18 +1,18 @@
 <h1>
 <img src="./src/icon.png" width="42" height="42"/>
-LettuceEncrypt for ASP.NET Core
+LettuceEncrypt-Archon for ASP.NET Core
 </h1>
 
 [![Build Status][ci-badge]][ci] [![Code Coverage][codecov-badge]][codecov]
 [![NuGet][nuget-badge] ![NuGet Downloads][nuget-download-badge]][nuget]
 
-[ci]: https://github.com/natemcmaster/LettuceEncrypt/actions?query=workflow%3ACI+branch%3Amain
-[ci-badge]: https://github.com/natemcmaster/LettuceEncrypt/workflows/CI/badge.svg
-[codecov]: https://codecov.io/gh/natemcmaster/LettuceEncrypt
-[codecov-badge]: https://codecov.io/gh/natemcmaster/LettuceEncrypt/branch/main/graph/badge.svg?token=l6uSsHZ8nA
-[nuget]: https://www.nuget.org/packages/LettuceEncrypt/
-[nuget-badge]: https://img.shields.io/nuget/v/LettuceEncrypt.svg?style=flat-square
-[nuget-download-badge]: https://img.shields.io/nuget/dt/LettuceEncrypt?style=flat-square
+[ci]: https://github.com/ArchonSystemsInc/LettuceEncrypt-Archon/actions?query=workflow%3ACI+branch%3Amain
+[ci-badge]: https://github.com/ArchonSystemsInc/LettuceEncrypt-Archon/workflows/CI/badge.svg
+[codecov]: https://codecov.io/gh/ArchonSystemsInc/LettuceEncrypt-Archon
+[codecov-badge]: https://codecov.io/gh/ArchonSystemsInc/LettuceEncrypt-Archon/branch/main/graph/badge.svg?token=l6uSsHZ8nA
+[nuget]: https://www.nuget.org/packages/LettuceEncrypt-Archon/
+[nuget-badge]: https://img.shields.io/nuget/v/LettuceEncrypt-Archon.svg?style=flat-square
+[nuget-download-badge]: https://img.shields.io/nuget/dt/LettuceEncrypt-Archon?style=flat-square
 [ACME]: https://en.wikipedia.org/wiki/Automated_Certificate_Management_Environment
 [Let's Encrypt]: https://letsencrypt.org/
 
@@ -30,9 +30,16 @@ offering** from Let's Encrypt® or ISRG™.
 
 This project is 100% organic and best served cold with ranch and carrots. 🥬
 
-### Project status 
+### Project status
 
-This project is in maintenance mode. I lost interest in developing features. I will make a patch if there is a security issue. I'll also consider an update if a new .NET major version breaks and the patch fix required is small. Please see https://github.com/natemcmaster/LettuceEncrypt/security/policy if you wish to report a security concern.
+The original author, [@natemcmaster] lost interest in developing new features. This fork is maintained by [Archon Systems Inc.](https://www.archonsystems.com/)
+
+This fork contains several enhancements:
+1. Support multi-instance deployment such as with [YARP](https://github.com/microsoft/reverse-proxy).
+2. Dynamic configuration of domains to generate certificate(s).
+3. Net6 TlsHandshakeCallbackOptions support, with async certificate selection.
+
+Please see https://github.com/ArchonSystemsInc/LettuceEncrypt-Archon/security/policy if you wish to report a security concern.
 
 ## Will this work for me?
 
@@ -46,7 +53,7 @@ Not sure? [Read "Web Server Scenarios" below for more details.](#web-server-scen
 Using :cloud: Azure App Services (aka WebApps)? This library isn't for you, but you can still get free HTTPS certificates.
 See ["Securing An Azure App Service with Let's Encrypt"](https://www.hanselman.com/blog/SecuringAnAzureAppServiceWebsiteUnderSSLInMinutesWithLetsEncrypt.aspx) by Scott Hanselman for more details.
 
-## Usage
+## Basic Usage
 
 Install this package into your project using NuGet ([see details here][nuget-url]).
 
@@ -59,7 +66,7 @@ public class Startup
 {
     public void ConfigureServices(IServiceCollection services)
     {
-        services.AddLettuceEncrypt();
+        services.AddLettuceEncrypt()
     }
 }
 ```
@@ -82,6 +89,61 @@ A few required options should be set, typically via the appsettings.json file.
     }
 }
 ```
+
+## Advanced Usage
+Running multiple instances of your service can be supported with a bit of additional work. It is recommended that you only run the certificate generating services (ACME services) on one instances within your deployment.
+
+#### Example: Run ACME services dynamically
+```csharp
+using Microsoft.Extensions.DependencyInjection;
+
+public class Startup
+{
+    public void ConfigureServices(IServiceCollection services)
+    {
+        var leBuilder = services.AddLettuceEncrypt(_ => { }, false);
+
+        // You control this condition
+        if (shouldRunLetsEncryptAcmeServices) {
+            leBuilder.AddLettuceEncryptAcmeService();
+        }
+    }
+}
+```
+
+When you run multiple instances behind a load balancer you need to ensure that any instance can respond to the LetsEncrypt challenge.
+To support this scenario you should implement a custom `IHttpChallengeResponseStore` and register it with DI.
+Note that only HTTP challenges support this at the moment. Help wanted to add support for TLS-ALPN-01 challenges.
+#### Example: Registering a custom HTTP Challenge Response Store
+```csharp
+using Microsoft.Extensions.DependencyInjection;
+
+public class Startup
+{
+    public void ConfigureServices(IServiceCollection services)
+    {
+        services.AddLettuceEncrypt();
+        services.AddSingleton<IHttpChallengeResponseStore, DistributedHttpChallengeResponseStore>();
+    }
+}
+
+class DistributedHttpChallengeResponseStore : IHttpChallengeResponseStore
+{
+    public void AddChallengeResponse(string token, string response) {
+        // Save somewhere (Azure Storage, etc.)
+    }
+
+    public bool TryGetResponse(string token, [MaybeNullWhen(false)] out string? value) {
+        // Read from somewhere (Azure Storage, etc.)
+    }
+}
+```
+
+Due to the current design of the active certificates are maintained through the ACME services component.
+This means that without additional work all certificates will only be available on the instance running the ACME services.
+To solve for this you can implement `IRuntimeCertificateStore` in a way that will allow all instances to access the runtime certificates. Orleans is a good candidate for this job, for example.
+
+Example TBD
 
 ## Additional options
 
@@ -113,12 +175,19 @@ If using `Listen` + `UseHttps` to manually configure Kestrel's address binding, 
 webBuilder.UseKestrel(k =>
 {
     var appServices = k.ApplicationServices;
-    k.Listen(
-        IPAddress.Any, 443,
+    k.ListenAnyIP(443,
         o => o.UseHttps(h =>
         {
             h.UseLettuceEncrypt(appServices);
         }));
+});
+```
+
+#### Example: Net6+ Listen (TlsHandshakeCallbackOptions Support)
+```c#
+webBuilder.UseKestrel(k =>
+{
+    k.ListenAnyIP(443, l => l.UseLettuceEncrypt(k.ApplicationServices));
 });
 ```
 
@@ -148,7 +217,7 @@ public void ConfigureServices(IServiceCollection services)
 
 ### Save generated certificates to Azure Key Vault
 
-Install [LettuceEncrypt.Azure](https://nuget.org/packages/LettuceEncrypt.Azure).
+Install [LettuceEncrypt-Archon.Azure](https://nuget.org/packages/LettuceEncrypt-Archon.Azure).
 This will save and load certificate files using an Azure Key Vault.
 It will also save your certificate authority account key as a secret in the same vault.
 

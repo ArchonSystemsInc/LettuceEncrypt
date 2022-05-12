@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Nate McMaster.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
-using System.Net;
 using Microsoft.AspNetCore.Server.Kestrel.Https;
 
 namespace Web;
@@ -25,12 +24,11 @@ public class Program
                 {
                     webBuilder.UseKestrel(k =>
                     {
-                        var appServices = k.ApplicationServices;
                         k.ConfigureHttpsDefaults(h =>
                         {
                             h.ClientCertificateMode = ClientCertificateMode.RequireCertificate;
-                            h.UseLettuceEncrypt(appServices);
                         });
+                        k.ListenAnyIP(443, o => o.UseLettuceEncrypt(k.ApplicationServices));
                     });
                 }
 
@@ -41,10 +39,7 @@ public class Program
                     webBuilder.PreferHostingUrls(false);
                     webBuilder.UseKestrel(k =>
                     {
-                        var appServices = k.ApplicationServices;
-                        k.Listen(IPAddress.Any, 443,
-                            o =>
-                                o.UseHttps(h => h.UseLettuceEncrypt(appServices)));
+                        k.ListenAnyIP(443, o => o.UseLettuceEncrypt(k.ApplicationServices));
                     });
                 }
             });

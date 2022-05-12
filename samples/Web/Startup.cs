@@ -7,7 +7,7 @@ public class Startup
 {
     public void ConfigureServices(IServiceCollection services)
     {
-        services.AddLettuceEncrypt();
+        services.AddLettuceEncrypt(_ => { }, false);
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
