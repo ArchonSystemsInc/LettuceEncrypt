@@ -8,5 +8,5 @@ Only the latest version of this library will be supported with security updates.
 ## Reporting a Vulnerability
 
 If you have found an issue that you believe is a security vulnerability, DO NOT OPEN an issue on GitHub. Instead,
-email your concerns to open-source@natemcmaster.com. Security concerns will be reviewed as soon as possible and
+email your concerns to bugbounty@archonsystems.com. Security concerns will be reviewed as soon as possible and
 you can expect a reply within two weeks.
