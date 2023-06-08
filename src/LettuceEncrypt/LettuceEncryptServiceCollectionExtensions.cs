@@ -29,7 +29,7 @@ public static class LettuceEncryptServiceCollectionExtensions
     /// <param name="services"></param>
     /// <returns></returns>
     public static ILettuceEncryptServiceBuilder AddLettuceEncrypt(this IServiceCollection services)
-        => services.AddLettuceEncrypt(_ => { }, true);
+        => services.AddLettuceEncrypt(_ => { });
 
     /// <summary>
     /// Add services that will automatically generate HTTPS certificates for this server.
@@ -40,7 +40,7 @@ public static class LettuceEncryptServiceCollectionExtensions
     /// <param name="includeAcmeServices">Include certificate generation services</param>
     /// <returns></returns>
     public static ILettuceEncryptServiceBuilder AddLettuceEncrypt(this IServiceCollection services,
-        Action<LettuceEncryptOptions> configure, bool includeAcmeServices)
+        Action<LettuceEncryptOptions> configure, bool includeAcmeServices = true)
     {
         services.AddTransient<IConfigureOptions<KestrelServerOptions>, KestrelOptionsSetup>();
 
