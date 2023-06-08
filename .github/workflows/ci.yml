@@ -59,10 +59,10 @@ jobs:
           name: packages
           path: artifacts/
           if-no-files-found: error
-      - uses: codecov/codecov-action@v2
-        with:
-          name: unittests-${{ matrix.os }}
-          fail_ci_if_error: true
+#      - uses: codecov/codecov-action@v2
+#        with:
+#          name: unittests-${{ matrix.os }}
+#          fail_ci_if_error: true
   release:
     if: "github.event.inputs.release"
     needs: build
@@ -83,8 +83,8 @@ jobs:
         run: nuget sources add -name github -source https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json -username ${{ github.repository_owner }} -password ${{ secrets.GITHUB_TOKEN }}
       - name: Push to GitHub package registry
         run: nuget push packages\*.nupkg -ApiKey ${{ secrets.GITHUB_TOKEN }} -Source github -SkipDuplicate
-      - name: Push to NuGet.org
-        run: nuget push packages\*.nupkg -ApiKey ${{ secrets.NUGET_API_KEY }} -Source https://api.nuget.org/v3/index.json -SkipDuplicate
+#      - name: Push to NuGet.org
+#        run: nuget push packages\*.nupkg -ApiKey ${{ secrets.NUGET_API_KEY }} -Source https://api.nuget.org/v3/index.json -SkipDuplicate
       - name: Create GitHub release
         uses: softprops/action-gh-release@v1
         env:
@@ -100,9 +100,6 @@ jobs:
             #### NuGet.org
             https://nuget.org/packages/LettuceEncrypt/${{ env.PACKAGE_VERSION }}
             https://nuget.org/packages/LettuceEncrypt.Azure/${{ env.PACKAGE_VERSION }}
-
-            #### GitHub Package Registry
-            https://github.com/natemcmaster?tab=packages&repo_name=LettuceEncrypt
 
           draft: true
           prerelease: ${{ env.IS_STABLE_BUILD == 'false' }} # Example: v3.1.0-beta
