@@ -3,7 +3,7 @@
 LettuceEncrypt-Archon for ASP.NET Core
 </h1>
 
-[![Build Status][ci-badge]][ci] [![Code Coverage][codecov-badge]][codecov]
+[![Build Status][ci-badge]][ci]
 [![NuGet][nuget-badge] ![NuGet Downloads][nuget-download-badge]][nuget]
 
 [ci]: https://github.com/ArchonSystemsInc/LettuceEncrypt-Archon/actions?query=workflow%3ACI+branch%3Amain
@@ -147,7 +147,8 @@ Example TBD
 
 ### Kestrel configuration
 
-If your code is using the `.UseKestrel()` method to configure IP addresses, ports, or HTTPS settings,
+If your 
+is using the `.UseKestrel()` method to configure IP addresses, ports, or HTTPS settings,
 you will also need to call `UseLettuceEncrypt`. This is required to make Lettuce Encrypt work.
 
 #### Example: ConfigureHttpsDefaults
