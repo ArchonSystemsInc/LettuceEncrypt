@@ -3,12 +3,6 @@
 
 using Certes.Acme;
 using Certes.Acme.Resource;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-
-#if NETSTANDARD2_0
-using IHostApplicationLifetime = Microsoft.Extensions.Hosting.IApplicationLifetime;
-#endif
 
 namespace LettuceEncrypt.Internal;
 

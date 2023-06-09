@@ -9,7 +9,6 @@ using System.Text;
 using LettuceEncrypt.Acme;
 using LettuceEncrypt.Internal.IO;
 using Microsoft.AspNetCore.Connections;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Org.BouncyCastle.Asn1;
 
@@ -24,9 +23,7 @@ internal class TlsAlpnChallengeResponder
     // See RFC8737 section 6.1
     private static readonly Oid s_acmeExtensionOid = new("1.3.6.1.5.5.7.1.31");
     private const string ProtocolName = "acme-tls/1";
-#if NETCOREAPP3_1_OR_GREATER
     private static readonly SslApplicationProtocol s_acmeTlsProtocol = new(ProtocolName);
-#endif
     private readonly IClock _clock;
     private readonly ILogger<TlsAlpnChallengeResponder> _logger;
     private readonly IOptions<LettuceEncryptOptions> _options;
@@ -45,16 +42,6 @@ internal class TlsAlpnChallengeResponder
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
-#if NETSTANDARD2_0
-    // TLS ALPN not supported on .NET Standard. Requires .NET Core 3
-    public bool IsEnabled => false;
-
-        public Task PrepareChallengeCertAsync(string domainName, string keyAuthorization)
-        {
-            throw new PlatformNotSupportedException();
-        }
-
-#elif NETCOREAPP3_1_OR_GREATER
     public bool IsEnabled => _options.Value.AllowedChallengeTypes.HasFlag(ChallengeType.TlsAlpn01);
 
     public void OnSslAuthenticate(ConnectionContext context, SslServerAuthenticationOptions options)
@@ -123,16 +110,13 @@ internal class TlsAlpnChallengeResponder
         Interlocked.Increment(ref _openChallenges);
         await _certificateSelector.AddChallengeCertAsync(cert);
     }
-#else
-#error Update TFMs
-#endif
 
-    public async Task DiscardChallengeAsync(string domainName)
+    public Task DiscardChallengeAsync(string domainName)
     {
         Interlocked.Decrement(ref _openChallenges);
 
         _logger.LogTrace("Clearing ALPN cert for {domainName}", domainName);
 
-        await _certificateSelector.ClearChallengeCertAsync(domainName);
+        return _certificateSelector.ClearChallengeCertAsync(domainName);
     }
 }

@@ -4,7 +4,6 @@
 using System.Text.Json;
 using LettuceEncrypt.Accounts;
 using LettuceEncrypt.Acme;
-using Microsoft.Extensions.Logging;
 
 namespace LettuceEncrypt.Internal;
 

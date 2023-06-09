@@ -2,7 +2,6 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using LettuceEncrypt.Internal.Certificates;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.Options;
 
@@ -23,13 +22,7 @@ internal class KestrelOptionsSetup : IConfigureOptions<KestrelServerOptions>
     {
         options.ConfigureHttpsDefaults(o =>
         {
-#if NETCOREAPP3_1_OR_GREATER
             o.UseLettuceEncrypt(_certificateSelector, _tlsAlpnChallengeResponder);
-#elif NETSTANDARD2_0
-                o.UseServerCertificateSelector(_certificateSelector);
-#else
-#error Update TFMs
-#endif
         });
     }
 }

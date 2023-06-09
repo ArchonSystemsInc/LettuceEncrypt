@@ -7,11 +7,8 @@ using LettuceEncrypt.Internal;
 using LettuceEncrypt.Internal.AcmeStates;
 using LettuceEncrypt.Internal.Certificates;
 using LettuceEncrypt.Internal.IO;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 
 // ReSharper disable once CheckNamespace

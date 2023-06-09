@@ -1,13 +1,11 @@
 // Copyright (c) Nate McMaster.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
-using System;
 using System.Net.Security;
 using LettuceEncrypt.Internal;
 using LettuceEncrypt.Internal.Certificates;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.AspNetCore.Server.Kestrel.Https;
-using Microsoft.Extensions.DependencyInjection;
 
 // ReSharper disable once CheckNamespace
 namespace Microsoft.AspNetCore.Hosting;
@@ -41,7 +39,6 @@ public static class LettuceEncryptKestrelHttpsOptionsExtensions
             throw new InvalidOperationException(MissingServicesMessage);
         }
 
-#if NETCOREAPP3_1_OR_GREATER
         var tlsResponder = applicationServices.GetService<TlsAlpnChallengeResponder>();
         if (tlsResponder is null)
         {
@@ -49,12 +46,6 @@ public static class LettuceEncryptKestrelHttpsOptionsExtensions
         }
 
         return httpsOptions.UseLettuceEncrypt(selector, tlsResponder);
-
-#elif NETSTANDARD2_0
-        return httpsOptions.UseServerCertificateSelector(selector);
-#else
-#error Update TFMs
-#endif
     }
     /// <summary>
     /// Configured LettuceEncrypt on this listening endpoint for Kestrel.
@@ -70,7 +61,6 @@ public static class LettuceEncryptKestrelHttpsOptionsExtensions
         this ListenOptions listenOptions,
         IServiceProvider applicationServices)
     {
-#if NET6_0_OR_GREATER
         var selector = applicationServices.GetService<IServerCertificateSelector>();
 
         if (selector is null)
@@ -85,13 +75,8 @@ public static class LettuceEncryptKestrelHttpsOptionsExtensions
         }
 
         return listenOptions.UseLettuceEncrypt(selector, tlsResponder);
-#elif NETCOREAPP3_1_OR_GREATER || NETSTANDARD2_0
-            return listenOptions;
-#else
-#error Update TFMs
-#endif
     }
-#if NET6_0_OR_GREATER
+
     internal static ListenOptions UseLettuceEncrypt(
         this ListenOptions listenOptions,
         IServerCertificateSelector selector,
@@ -111,8 +96,7 @@ public static class LettuceEncryptKestrelHttpsOptionsExtensions
             }
         });
     }
-#endif
-#if NETCOREAPP3_1_OR_GREATER
+
     internal static HttpsConnectionAdapterOptions UseLettuceEncrypt(
         this HttpsConnectionAdapterOptions httpsOptions,
         IServerCertificateSelector selector,
@@ -130,8 +114,4 @@ public static class LettuceEncryptKestrelHttpsOptionsExtensions
         httpsOptions.UseServerCertificateSelector(selector);
         return httpsOptions;
     }
-#elif NETSTANDARD2_0
-#else
-#error Update TFMs
-#endif
 }

@@ -4,7 +4,6 @@
 using Certes;
 using Certes.Acme;
 using Certes.Acme.Resource;
-using Microsoft.Extensions.Logging;
 
 namespace LettuceEncrypt.Internal;
 

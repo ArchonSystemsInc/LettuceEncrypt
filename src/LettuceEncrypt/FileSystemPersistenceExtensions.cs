@@ -4,9 +4,7 @@
 using LettuceEncrypt.Accounts;
 using LettuceEncrypt.Acme;
 using LettuceEncrypt.Internal;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Logging;
 
 namespace LettuceEncrypt;
 

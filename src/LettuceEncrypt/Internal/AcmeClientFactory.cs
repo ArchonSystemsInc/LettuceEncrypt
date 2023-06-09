@@ -3,7 +3,6 @@
 
 using Certes;
 using LettuceEncrypt.Acme;
-using Microsoft.Extensions.Logging;
 
 namespace LettuceEncrypt.Internal;
 

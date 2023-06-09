@@ -100,7 +100,6 @@ internal class CertificateSelector : IServerCertificateSelector
 
     public async Task<X509Certificate2?> SelectAsync(ConnectionContext? context, string? domainName)
     {
-#if NETCOREAPP3_1_OR_GREATER
         if (await _runtimeCertificateStore.AnyChallengeCertAsync())
         {
             // var sslStream = context.Features.Get<SslStream>();
@@ -118,10 +117,6 @@ internal class CertificateSelector : IServerCertificateSelector
                 }
             }
         }
-#elif NETSTANDARD2_0
-#else
-#error Update TFMs
-#endif
 
         if (domainName == null)
         {
