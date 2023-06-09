@@ -65,7 +65,7 @@ public class ConfigurationBindingTests
         Assert.Equal(challengeType, options.AllowedChallengeTypes);
     }
 
-    private LettuceEncryptOptions ParseOptions(Dictionary<string, string> input)
+    private static LettuceEncryptOptions ParseOptions(Dictionary<string, string> input)
     {
         var config = new ConfigurationBuilder()
                    .AddInMemoryCollection(input)

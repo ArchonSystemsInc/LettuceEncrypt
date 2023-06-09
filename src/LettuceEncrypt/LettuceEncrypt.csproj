@@ -1,5 +1,4 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
-
   <PropertyGroup>
     <TargetFrameworks>net6.0</TargetFrameworks>
     <OutputType>Library</OutputType>
@@ -9,12 +8,12 @@
     <Description>Provides API for configuring ASP.NET Core to automatically generate HTTPS certificates.</Description>
     <PackageDescription>$(Description)
 
-This configures your server to use the ACME protocol to connect with a certificate authority (CA),
-such as Let's Encrypt (https://letsencrypt.org), to verify ownership of your domain name
-and generate a HTTPS certificate. This happens automatically when the server starts up, and will
-renew the certificate automatically when the expiration date is near.
+      This configures your server to use the ACME protocol to connect with a certificate authority (CA),
+      such as Let's Encrypt (https://letsencrypt.org), to verify ownership of your domain name
+      and generate a HTTPS certificate. This happens automatically when the server starts up, and will
+      renew the certificate automatically when the expiration date is near.
 
-This only works with Kestrel, which is the default server configuration for ASP.NET Core projects. Other servers, such as IIS and nginx, are not supported.
+      This only works with Kestrel, which is the default server configuration for ASP.NET Core projects. Other servers, such as IIS and nginx, are not supported.
     </PackageDescription>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageId>LettuceEncrypt-Archon</PackageId>
@@ -26,7 +25,7 @@ This only works with Kestrel, which is the default server configuration for ASP.
 
   <ItemGroup>
     <PackageReference Include="Certes" Version="3.0.4" />
-	<PackageReference Include="System.Collections" Version="4.3.0" />
+    <PackageReference Include="System.Collections" Version="4.3.0" />
   </ItemGroup>
 
 </Project>

@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Server.Kestrel.Https;
 namespace Microsoft.AspNetCore.Hosting;
 
 /// <summary>
-/// API for configuring Kestrel certificiate options
+/// API for configuring Kestrel certificate options
 /// </summary>
 internal static class KestrelHttpsOptionsExtensions
 {
@@ -22,8 +22,7 @@ internal static class KestrelHttpsOptionsExtensions
         this HttpsConnectionAdapterOptions httpsOptions,
         IServerCertificateSelector certificateSelector)
     {
-
-        httpsOptions.ServerCertificateSelector = certificateSelector.Select;
+        httpsOptions.ServerCertificateSelector = certificateSelector.Select!;
         return httpsOptions;
     }
 }

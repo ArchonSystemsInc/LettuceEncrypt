@@ -49,7 +49,7 @@ public class LettuceEncryptOptions
     internal bool UseStagingServerExplicitlySet => _useStagingServer.HasValue;
 
     /// <summary>
-    /// A certificate to use if a certifcates cannot be created automatically.
+    /// A certificate to use if a certificates cannot be created automatically.
     /// <para>
     /// This can be null if there is not fallback certificate.
     /// </para>
@@ -77,4 +77,9 @@ public class LettuceEncryptOptions
     /// Defaults to <see cref="ChallengeType.Any"/>.
     /// </summary>
     public ChallengeType AllowedChallengeTypes { get; set; } = ChallengeType.Any;
+
+    /// <summary>
+    /// Optional EAB (External Account Binding) account credentials used for creating new account.
+    /// </summary>
+    public EabCredentials EabCredentials { get; set; } = new();
 }

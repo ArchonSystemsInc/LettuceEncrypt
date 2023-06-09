@@ -32,7 +32,7 @@ internal class CertificateSelector : IServerCertificateSelector
         {
             var selectedCert = await _runtimeCertificateStore.AddCertWithDomainNameAsync(dnsName, certificate);
 
-            // Call preload once per certificate, but only if the cetificate is actually selected to be used
+            // Call preload once per certificate, but only if the certificate is actually selected to be used
             // for this domain. This is a small optimization which avoids preloading on a cert that may not be used.
             if (!preloaded && selectedCert == certificate)
             {
@@ -153,9 +153,9 @@ internal class CertificateSelector : IServerCertificateSelector
         using var chain = new X509Chain
         {
             ChainPolicy =
-                {
-                    RevocationMode = X509RevocationMode.NoCheck
-                }
+            {
+                RevocationMode = X509RevocationMode.NoCheck
+            }
         };
 
         var commonName = X509CertificateHelpers.GetCommonName(certificate);

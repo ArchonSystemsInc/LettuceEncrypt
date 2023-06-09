@@ -53,13 +53,13 @@ jobs:
       - name: Run build script
         id: build_script
         run: ./build.ps1 -ci
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         if: ${{ matrix.os == 'windows-latest' }}
         with:
           name: packages
           path: artifacts/
           if-no-files-found: error
-#      - uses: codecov/codecov-action@v2
+#      - uses: codecov/codecov-action@v3
 #        with:
 #          name: unittests-${{ matrix.os }}
 #          fail_ci_if_error: true
@@ -100,7 +100,6 @@ jobs:
             #### NuGet.org
             https://nuget.org/packages/LettuceEncrypt-Archon/${{ env.PACKAGE_VERSION }}
             https://nuget.org/packages/LettuceEncrypt-Archon.Azure/${{ env.PACKAGE_VERSION }}
-
           draft: true
           prerelease: ${{ env.IS_STABLE_BUILD == 'false' }} # Example: v3.1.0-beta
           files: packages/*

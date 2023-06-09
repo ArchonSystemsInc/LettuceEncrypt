@@ -4,6 +4,7 @@
 using Certes;
 using Certes.Acme;
 using Certes.Acme.Resource;
+using Microsoft.Extensions.Options;
 
 namespace LettuceEncrypt.Internal;
 
@@ -11,11 +12,13 @@ internal class AcmeClient
 {
     private readonly AcmeContext _context;
     private readonly ILogger<AcmeClient> _logger;
+    private readonly IOptions<LettuceEncryptOptions> _options;
     private IAccountContext? _accountContext;
 
-    public AcmeClient(ILogger<AcmeClient> logger, Uri directoryUri, IKey acmeAccountKey)
+    public AcmeClient(ILogger<AcmeClient> logger, IOptions<LettuceEncryptOptions> options, Uri directoryUri, IKey acmeAccountKey)
     {
         _logger = logger;
+        _options = options;
         _logger.LogInformation("Using certificate authority {directoryUri}", directoryUri);
         _context = new AcmeContext(directoryUri, acmeAccountKey);
     }
@@ -31,14 +34,12 @@ internal class AcmeClient
     public async Task<int> CreateAccountAsync(string emailAddress)
     {
         _logger.LogAcmeAction("NewAccount");
-        _accountContext = await _context.NewAccount(emailAddress, termsOfServiceAgreed: true);
+        var eabCredentials = _options.Value.EabCredentials;
+        _accountContext = await _context.NewAccount(emailAddress, termsOfServiceAgreed: true, eabKeyId: eabCredentials.EabKeyId, eabKey: eabCredentials.EabKey, eabKeyAlg: eabCredentials.EabKeyAlg);
 
-        if (!int.TryParse(_accountContext.Location.Segments.Last(), out var accountId))
-        {
-            accountId = 0;
-        }
-
-        return accountId;
+        return int.TryParse(_accountContext.Location.Segments.Last(), out var accountId)
+            ? accountId
+            : 0;
     }
 
     public async Task<Uri> GetTermsOfServiceAsync()
@@ -117,5 +118,5 @@ internal class AcmeClient
         return await order.Generate(csrInfo, privateKey);
     }
 
-    private Exception MissingAccountContext() => new InvalidOperationException("Account wasn't initialized yet");
+    private static Exception MissingAccountContext() => new InvalidOperationException("Account wasn't initialized yet");
 }

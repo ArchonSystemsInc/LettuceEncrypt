@@ -25,7 +25,8 @@ internal class BeginCertificateCreationState : AcmeState
         CertificateSelector selector,
         IEnumerable<ICertificateRepository> certificateRepositories,
         IDomainLoader domainLoader,
-        IClock clock) : base(context)
+        IClock clock)
+        : base(context)
     {
         _logger = logger;
         _options = options;
@@ -94,9 +95,9 @@ internal class BeginCertificateCreationState : AcmeState
     private async Task SaveCertificateAsync(X509Certificate2 cert, CancellationToken cancellationToken)
     {
         var saveTasks = new List<Task>
-            {
-                Task.Delay(TimeSpan.FromMinutes(5), cancellationToken)
-            };
+        {
+            Task.Delay(TimeSpan.FromMinutes(5), cancellationToken)
+        };
 
         var errors = new List<Exception>();
         foreach (var repo in _certificateRepositories)

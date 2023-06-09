@@ -48,7 +48,7 @@ internal class TlsAlpnChallengeResponder
     {
         if (_openChallenges > 0)
         {
-            options?.ApplicationProtocols?.Add(s_acmeTlsProtocol);
+            (options.ApplicationProtocols ??= new List<SslApplicationProtocol>()).Add(s_acmeTlsProtocol);
         }
     }
 
