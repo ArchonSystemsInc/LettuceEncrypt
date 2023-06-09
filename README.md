@@ -8,8 +8,6 @@ LettuceEncrypt-Archon for ASP.NET Core
 
 [ci]: https://github.com/ArchonSystemsInc/LettuceEncrypt-Archon/actions?query=workflow%3ACI+branch%3Amain
 [ci-badge]: https://github.com/ArchonSystemsInc/LettuceEncrypt-Archon/workflows/CI/badge.svg
-[codecov]: https://codecov.io/gh/ArchonSystemsInc/LettuceEncrypt-Archon
-[codecov-badge]: https://codecov.io/gh/ArchonSystemsInc/LettuceEncrypt-Archon/branch/main/graph/badge.svg?token=l6uSsHZ8nA
 [nuget]: https://www.nuget.org/packages/LettuceEncrypt-Archon/
 [nuget-badge]: https://img.shields.io/nuget/v/LettuceEncrypt-Archon.svg?style=flat-square
 [nuget-download-badge]: https://img.shields.io/nuget/dt/LettuceEncrypt-Archon?style=flat-square
