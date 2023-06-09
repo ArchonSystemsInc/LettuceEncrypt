@@ -29,8 +29,4 @@ This only works with Kestrel, which is the default server configuration for ASP.
 	<PackageReference Include="System.Collections" Version="4.3.0" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\Kestrel.Certificates\McMaster.AspNetCore.Kestrel.Certificates.csproj" />
-  </ItemGroup>
-
 </Project>

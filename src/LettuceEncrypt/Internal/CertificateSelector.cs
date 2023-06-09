@@ -4,7 +4,7 @@
 using System.Collections.Concurrent;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
-using McMaster.AspNetCore.Kestrel.Certificates;
+using LettuceEncrypt.Internal.Certificates;
 using Microsoft.AspNetCore.Connections;
 using Microsoft.Extensions.Options;
 

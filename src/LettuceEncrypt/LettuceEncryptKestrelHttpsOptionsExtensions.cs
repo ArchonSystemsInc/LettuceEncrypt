@@ -4,7 +4,7 @@
 using System;
 using System.Net.Security;
 using LettuceEncrypt.Internal;
-using McMaster.AspNetCore.Kestrel.Certificates;
+using LettuceEncrypt.Internal.Certificates;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.AspNetCore.Server.Kestrel.Https;
 using Microsoft.Extensions.DependencyInjection;

@@ -1,4 +1,0 @@
-#nullable enable
-McMaster.AspNetCore.Kestrel.Certificates.IServerCertificateSelector
-Microsoft.AspNetCore.Hosting.KestrelHttpsOptionsExtensions
-static Microsoft.AspNetCore.Hosting.KestrelHttpsOptionsExtensions.UseServerCertificateSelector(this Microsoft.AspNetCore.Server.Kestrel.Https.HttpsConnectionAdapterOptions! httpsOptions, McMaster.AspNetCore.Kestrel.Certificates.IServerCertificateSelector! certificateSelector) -> Microsoft.AspNetCore.Server.Kestrel.Https.HttpsConnectionAdapterOptions!

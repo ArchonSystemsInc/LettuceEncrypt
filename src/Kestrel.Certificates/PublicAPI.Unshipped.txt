@@ -1,3 +1,0 @@
-#nullable enable
-McMaster.AspNetCore.Kestrel.Certificates.IServerCertificateSelector.Select(Microsoft.AspNetCore.Connections.ConnectionContext? context, string? domainName) -> System.Security.Cryptography.X509Certificates.X509Certificate2?
-McMaster.AspNetCore.Kestrel.Certificates.IServerCertificateSelector.SelectAsync(Microsoft.AspNetCore.Connections.ConnectionContext? context, string? domainName) -> System.Threading.Tasks.Task<System.Security.Cryptography.X509Certificates.X509Certificate2?>!

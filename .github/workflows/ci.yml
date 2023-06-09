@@ -39,7 +39,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Setup .NET Core 3.1
-        uses: actions/setup-dotnet@v1
+        uses: actions/setup-dotnet@v3
         with:
           dotnet-version: "3.1.x"
       - name: Setup .NET 5
@@ -98,8 +98,8 @@ jobs:
             Packages have been posted to these feeds:
 
             #### NuGet.org
-            https://nuget.org/packages/LettuceEncrypt/${{ env.PACKAGE_VERSION }}
-            https://nuget.org/packages/LettuceEncrypt.Azure/${{ env.PACKAGE_VERSION }}
+            https://nuget.org/packages/LettuceEncrypt-Archon/${{ env.PACKAGE_VERSION }}
+            https://nuget.org/packages/LettuceEncrypt-Archon.Azure/${{ env.PACKAGE_VERSION }}
 
           draft: true
           prerelease: ${{ env.IS_STABLE_BUILD == 'false' }} # Example: v3.1.0-beta
