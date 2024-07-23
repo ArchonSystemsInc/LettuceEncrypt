@@ -7,6 +7,7 @@ using LettuceEncrypt.Internal;
 using LettuceEncrypt.Internal.AcmeStates;
 using LettuceEncrypt.Internal.Certificates;
 using LettuceEncrypt.Internal.IO;
+using LettuceEncrypt.Internal.PfxBuilder;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
@@ -61,6 +62,8 @@ public static class LettuceEncryptServiceCollectionExtensions
             .AddSingleton<HttpChallengeResponseMiddleware>()
             .AddSingleton<TlsAlpnChallengeResponder>()
             .AddSingleton<IStartupFilter, HttpChallengeStartupFilter>()
+            .AddSingleton<IDnsChallengeProvider, NoOpDnsChallengeProvider>()
+            .AddSingleton<IStartupFilter, HttpChallengeStartupFilter>()
             .AddSingleton<DomainLoader>()
             .AddSingleton<IDomainLoader>(x => x.GetRequiredService<DomainLoader>());
 
@@ -102,6 +105,9 @@ public static class LettuceEncryptServiceCollectionExtensions
             .AddTransient<ServerStartupState>()
             .AddTransient<CheckForRenewalState>()
             .AddTransient<BeginCertificateCreationState>();
+
+        // PfxBuilderFactory is stateless, so there's no need for a transient registration
+        services.AddSingleton<IPfxBuilderFactory, PfxBuilderFactory>();
 
         return builder;
     }

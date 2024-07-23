@@ -49,6 +49,22 @@ public class LettuceEncryptOptions
     internal bool UseStagingServerExplicitlySet => _useStagingServer.HasValue;
 
     /// <summary>
+    /// Additional issuers passed to certes before building the successfully downloaded certificate,
+    /// used internally by certes to verify the issuer for authenticity.
+    /// <para>
+    /// This is useful especially when using a staging server (e.g. for integration tests) with a root certificate
+    /// that is not part of certes' embedded resources.
+    /// See https://github.com/fszlin/certes/tree/v3.0.0/src/Certes/Resources/Certificates for context.
+    /// </para>
+    /// </summary>
+    /// <remarks>
+    /// Lettuce encrypt uses certes internally, while certes depends on BouncyCastle.Cryptography to parse
+    /// certificates. See https://github.com/bcgit/bc-csharp/blob/830d9b8c7bdfcec511bff0a6cf4a0e8ed568e7c1/crypto/src/x509/X509CertificateParser.cs#L20
+    /// if you're wondering what certificate formats are supported.
+    /// </remarks>
+    public string[] AdditionalIssuers { get; set; } = Array.Empty<string>();
+
+    /// <summary>
     /// A certificate to use if a certificates cannot be created automatically.
     /// <para>
     /// This can be null if there is not fallback certificate.
@@ -71,6 +87,11 @@ public class LettuceEncryptOptions
     /// The asymmetric algorithm used for generating a private key for certificates: RS256, ES256, ES384, ES512
     /// </summary>
     public KeyAlgorithm KeyAlgorithm { get; set; } = KeyAlgorithm.ES256;
+
+    /// <summary>
+    /// The key size used for generating a private key for certificates
+    /// </summary>
+    public int? KeySize { get; set; }
 
     /// <summary>
     /// Specifies which kinds of ACME challenges LettuceEncrypt can use to verify domain ownership.
