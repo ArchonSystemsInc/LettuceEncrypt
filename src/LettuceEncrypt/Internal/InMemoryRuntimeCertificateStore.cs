@@ -48,27 +48,16 @@ namespace LettuceEncrypt.Internal
 
         public Task<X509Certificate2?> GetCertAsync(string domainName)
         {
-            if (_certs.TryGetValue(domainName, out var certificate))
-            {
-                return Task.FromResult((X509Certificate2?)certificate);
-            }
-            else
-            {
-                return Task.FromResult((X509Certificate2?)null);
-            }
+            return _certs.TryGetValue(domainName, out var certificate)
+                ? Task.FromResult((X509Certificate2?)certificate)
+                : Task.FromResult((X509Certificate2?)null);
         }
 
         public Task<X509Certificate2?> GetChallengeCertAsync(string domainName)
         {
-            if (_challengeCerts.TryGetValue(domainName, out var certificate))
-            {
-                return Task.FromResult((X509Certificate2?)certificate);
-            }
-            else
-            {
-                return Task.FromResult((X509Certificate2?)null);
-            }
-            throw new NotImplementedException();
+            return _challengeCerts.TryGetValue(domainName, out var certificate)
+                ? Task.FromResult((X509Certificate2?)certificate)
+                : Task.FromResult((X509Certificate2?)null);
         }
 
         public Task<bool> RemoveCertAsync(string domainName)

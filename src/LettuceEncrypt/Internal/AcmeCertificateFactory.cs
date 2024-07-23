@@ -2,14 +2,13 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System.Security.Cryptography.X509Certificates;
+using System.Text;
 using Certes;
 using Certes.Acme;
 using Certes.Acme.Resource;
 using LettuceEncrypt.Accounts;
 using LettuceEncrypt.Acme;
 using LettuceEncrypt.Internal.PfxBuilder;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace LettuceEncrypt.Internal;
@@ -61,7 +60,6 @@ internal class AcmeCertificateFactory
             _appStarted.TrySetResult(null);
         }
 
-        _additionalIssuersSources = additionalIssuersSources;
         _accountRepository = accountRepository ?? new FileSystemAccountStore(logger, certificateAuthority);
     }
 

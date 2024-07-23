@@ -5,8 +5,6 @@ using Certes;
 using Certes.Acme;
 using Certes.Acme.Resource;
 using LettuceEncrypt.Acme;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 
 namespace LettuceEncrypt.Internal;
 

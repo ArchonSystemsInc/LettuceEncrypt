@@ -1,8 +1,6 @@
 #nullable enable
 LettuceEncrypt.IAcmeCertificateLoader
 LettuceEncrypt.IAcmeCertificateLoader.IsRunning.get -> bool
-LettuceEncrypt.IAdditionalIssuersSource
-LettuceEncrypt.IAdditionalIssuersSource.GetAdditionalIssuersAsync(System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<System.Collections.Generic.IEnumerable<System.Security.Cryptography.X509Certificates.X509Certificate2!>!>!
 LettuceEncrypt.IDomainCert
 LettuceEncrypt.IDomainCert.Domains.get -> System.Collections.Generic.ISet<string!>!
 LettuceEncrypt.IDomainLoader
