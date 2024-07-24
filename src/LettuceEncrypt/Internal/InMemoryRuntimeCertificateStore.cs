@@ -19,15 +19,8 @@ namespace LettuceEncrypt.Internal
             return Task.FromResult(_certs.AddOrUpdate(
                 domainName,
                 certificate,
-                (_, currentCert) =>
-                {
-                    if (currentCert == null || certificate.NotAfter >= currentCert.NotAfter)
-                    {
-                        return certificate;
-                    }
-
-                    return currentCert;
-                }));
+                (_, currentCert) => certificate.NotAfter >= currentCert.NotAfter ? certificate : currentCert
+            ));
         }
 
         public Task<X509Certificate2> AddChallengeCertWithDomainNameAsync(string domainName, X509Certificate2 certificate)
@@ -35,15 +28,8 @@ namespace LettuceEncrypt.Internal
             return Task.FromResult(_challengeCerts.AddOrUpdate(
                 domainName,
                 certificate,
-                (_, currentCert) =>
-                {
-                    if (currentCert == null || certificate.NotAfter >= currentCert.NotAfter)
-                    {
-                        return certificate;
-                    }
-
-                    return currentCert;
-                }));
+                (_, currentCert) => certificate.NotAfter >= currentCert.NotAfter ? certificate : currentCert
+            ));
         }
 
         public Task<X509Certificate2?> GetCertAsync(string domainName)
@@ -72,7 +58,7 @@ namespace LettuceEncrypt.Internal
 
         public Task<bool> AnyChallengeCertAsync()
         {
-            return Task.FromResult(_challengeCerts.Count > 0);
+            return Task.FromResult(!_challengeCerts.IsEmpty);
         }
 
         public Task<bool> ContainsCertForDomainAsync(string domainName)

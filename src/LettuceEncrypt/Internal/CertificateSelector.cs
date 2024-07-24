@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Nate McMaster.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
-using System.Collections.Concurrent;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using LettuceEncrypt.Internal.Certificates;
@@ -34,7 +33,7 @@ internal class CertificateSelector : IServerCertificateSelector
 
             // Call preload once per certificate, but only if the certificate is actually selected to be used
             // for this domain. This is a small optimization which avoids preloading on a cert that may not be used.
-            if (!preloaded && selectedCert == certificate)
+            if (!preloaded && selectedCert.Equals(certificate))
             {
                 preloaded = true;
                 PreloadIntermediateCertificates(selectedCert);
@@ -55,31 +54,6 @@ internal class CertificateSelector : IServerCertificateSelector
         await _runtimeCertificateStore.RemoveChallengeCertAsync(dnsName);
     }
 
-    /// <summary>
-    /// Registers the certificate for usage with domain unless there is already a newer cert for this domain.
-    /// </summary>
-    /// <param name="certs"></param>
-    /// <param name="domainName"></param>
-    /// <param name="certificate"></param>
-    /// <returns>The certificate current selected to be used for this domain</returns>
-    private X509Certificate2 AddWithDomainName(ConcurrentDictionary<string, X509Certificate2> certs, string domainName,
-        X509Certificate2 certificate)
-    {
-        return certs.AddOrUpdate(
-            domainName,
-            certificate,
-            (_, currentCert) =>
-            {
-                if (currentCert == null || certificate.NotAfter >= currentCert.NotAfter)
-                {
-                    return certificate;
-                }
-
-                return currentCert;
-            });
-    }
-
-    public Task<bool> HasCertForDomainAsync(string domainName) => _runtimeCertificateStore.ContainsCertForDomainAsync(domainName);
     public async Task<bool> HasCertForDomainAsync(IDomainCert domainCert)
     {
         foreach (var domainName in domainCert.Domains)
@@ -150,13 +124,8 @@ internal class CertificateSelector : IServerCertificateSelector
         }
 
         // workaround for https://github.com/dotnet/aspnetcore/issues/21183
-        using var chain = new X509Chain
-        {
-            ChainPolicy =
-            {
-                RevocationMode = X509RevocationMode.NoCheck
-            }
-        };
+        using var chain = new X509Chain();
+        chain.ChainPolicy.RevocationMode = X509RevocationMode.NoCheck;
 
         var commonName = X509CertificateHelpers.GetCommonName(certificate);
         try

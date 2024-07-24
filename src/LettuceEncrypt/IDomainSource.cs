@@ -37,7 +37,7 @@ namespace LettuceEncrypt
         public string Domain { get; set; } = default!;
 
         /// <inheritdoc/>
-        public ISet<string> Domains => new HashSet<string>() { Domain };
+        public ISet<string> Domains => new HashSet<string> { Domain };
     }
 
     /// <summary>

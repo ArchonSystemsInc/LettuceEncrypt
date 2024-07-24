@@ -47,8 +47,6 @@ internal class BeginCertificateCreationState : AcmeState
         var account = await _acmeCertificateFactory.GetOrCreateAccountAsync(cancellationToken);
         _logger.LogInformation("Using account {accountId}", account.Id);
 
-        var saveTasks = new List<Task>();
-
         foreach (var domainCert in domainCerts)
         {
             foreach (var domain in domainCert.Domains)
@@ -76,48 +74,41 @@ internal class BeginCertificateCreationState : AcmeState
                     // Immediately add to selector incase of overlap between domain sources.
                     await _selector.AddAsync(newCert);
 
-                    saveTasks.Add(SaveCertificateAsync(newCert, cancellationToken));
+                    _logger.LogInformation("Saving certificate {subjectName} ({thumbprint}) to repositories",
+                        newCert.Subject,
+                        newCert.Thumbprint);
+                    await SaveCertificateAsync(newCert);
+
                     break;
                 }
                 catch (Exception ex)
                 {
                     _logger.LogError(0, ex, "Failed to automatically create a certificate for {hostnames}", domainCert.Domains);
-                    throw;
                 }
             }
         }
 
-        await Task.WhenAll(saveTasks);
-
         return MoveTo<CheckForRenewalState>();
     }
 
-    private async Task SaveCertificateAsync(X509Certificate2 cert, CancellationToken cancellationToken)
+    private async Task SaveCertificateAsync(X509Certificate2 cert)
     {
-        var saveTasks = new List<Task>
-        {
-            Task.Delay(TimeSpan.FromMinutes(5), cancellationToken)
-        };
+        var saveTasks = new List<Task>();
+        saveTasks.AddRange(_certificateRepositories.Select(repo => repo.SaveAsync(cert, CancellationToken.None)));
 
-        var errors = new List<Exception>();
-        foreach (var repo in _certificateRepositories)
+        var saveAllTask = Task.WhenAll(saveTasks);
+        try
         {
-            try
-            {
-                saveTasks.Add(repo.SaveAsync(cert, cancellationToken));
-            }
-            catch (Exception ex)
-            {
-                // synchronous saves may fail immediately
-                errors.Add(ex);
-            }
+            await saveAllTask;
         }
-
-        await Task.WhenAll(saveTasks);
-
-        if (errors.Count > 0)
+        catch (Exception ex)
         {
-            throw new AggregateException("Failed to save cert to repositories", errors);
+            if (saveAllTask.Exception != null)
+            {
+                throw new AggregateException("Failed to save cert to repositories", ex, saveAllTask.Exception);
+            }
+
+            throw;
         }
     }
 }

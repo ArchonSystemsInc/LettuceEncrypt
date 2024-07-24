@@ -161,28 +161,27 @@ internal class AcmeCertificateFactory
 
         IOrderContext? orderContext = null;
         var orders = await _client.GetOrdersAsync();
-        if (orders.Any())
+        foreach (var order in orders)
         {
-            foreach (var order in orders)
+            var orderDetails = await _client.GetOrderDetailsAsync(order);
+            if (orderDetails.Status != OrderStatus.Pending)
             {
-                var orderDetails = await _client.GetOrderDetailsAsync(order);
-                if (orderDetails.Status != OrderStatus.Pending)
-                {
-                    continue;
-                }
-
-                var orderDomains = orderDetails
-                    .Identifiers
-                    .Where(i => i.Type == IdentifierType.Dns)
-                    .Select(s => s.Value);
-
-                if (domains.SetEquals(orderDomains))
-                {
-                    _logger.LogDebug("Found an existing order for a certificate");
-                    orderContext = order;
-                    break;
-                }
+                continue;
             }
+
+            var orderDomains = orderDetails
+                .Identifiers
+                .Where(i => i.Type == IdentifierType.Dns)
+                .Select(s => s.Value);
+
+            if (!domains.SetEquals(orderDomains))
+            {
+                continue;
+            }
+
+            _logger.LogDebug("Found an existing order for a certificate");
+            orderContext = order;
+            break;
         }
 
         if (orderContext == null)
