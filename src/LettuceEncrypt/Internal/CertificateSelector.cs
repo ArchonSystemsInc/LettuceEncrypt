@@ -124,8 +124,13 @@ internal class CertificateSelector : IServerCertificateSelector
         }
 
         // workaround for https://github.com/dotnet/aspnetcore/issues/21183
-        using var chain = new X509Chain();
-        chain.ChainPolicy.RevocationMode = X509RevocationMode.NoCheck;
+        using var chain = new X509Chain
+        {
+            ChainPolicy =
+            {
+                RevocationMode = X509RevocationMode.NoCheck
+            }
+        };
 
         var commonName = X509CertificateHelpers.GetCommonName(certificate);
         try
