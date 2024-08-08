@@ -7,4 +7,10 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\LettuceEncrypt\LettuceEncrypt.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Testing\*.pem">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 </Project>
