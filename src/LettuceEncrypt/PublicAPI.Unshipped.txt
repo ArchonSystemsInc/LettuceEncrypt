@@ -16,6 +16,8 @@ LettuceEncrypt.IRuntimeCertificateStore.GetCertAsync(string! domainName) -> Syst
 LettuceEncrypt.IRuntimeCertificateStore.GetChallengeCertAsync(string! domainName) -> System.Threading.Tasks.Task<System.Security.Cryptography.X509Certificates.X509Certificate2?>!
 LettuceEncrypt.IRuntimeCertificateStore.RemoveCertAsync(string! domainName) -> System.Threading.Tasks.Task<bool>!
 LettuceEncrypt.IRuntimeCertificateStore.RemoveChallengeCertAsync(string! domainName) -> System.Threading.Tasks.Task<bool>!
+LettuceEncrypt.LettuceEncryptOptions.FailedRenewalBackoffPeriod.get -> System.TimeSpan
+LettuceEncrypt.LettuceEncryptOptions.FailedRenewalBackoffPeriod.set -> void
 LettuceEncrypt.MultipleDomainCert
 LettuceEncrypt.MultipleDomainCert.Domains.get -> System.Collections.Generic.ISet<string!>!
 LettuceEncrypt.MultipleDomainCert.MultipleDomainCert() -> void

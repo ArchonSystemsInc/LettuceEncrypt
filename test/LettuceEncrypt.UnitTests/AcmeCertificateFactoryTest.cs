@@ -74,7 +74,8 @@ public sealed class AcmeCertificateFactoryTest
             tlsAlpnChallengeResponder: null!,
             dnsChallengeProvider: new NoOpDnsChallengeProvider(),
             certificateAuthority: certificateAuthority,
-            pfxBuilderFactory: new PfxBuilderFactoryStub(pfxBuilder));
+            pfxBuilderFactory: new PfxBuilderFactoryStub(pfxBuilder),
+            failedOrderStore: new InMemoryFailedOrderStore());
     }
 
     private sealed class PfxBuilderFactoryStub : IPfxBuilderFactory

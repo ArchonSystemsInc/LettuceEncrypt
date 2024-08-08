@@ -84,6 +84,11 @@ public class LettuceEncryptOptions
     public TimeSpan? RenewalCheckPeriod { get; set; } = TimeSpan.FromDays(1);
 
     /// <summary>
+    /// How long to wait between failed cert creation/renewal attempts
+    /// </summary>
+    public TimeSpan FailedRenewalBackoffPeriod { get; set; } = TimeSpan.FromMinutes(5);
+
+    /// <summary>
     /// The asymmetric algorithm used for generating a private key for certificates: RS256, ES256, ES384, ES512
     /// </summary>
     public KeyAlgorithm KeyAlgorithm { get; set; } = KeyAlgorithm.ES256;

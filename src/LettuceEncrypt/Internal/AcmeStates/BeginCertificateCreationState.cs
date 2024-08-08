@@ -88,6 +88,8 @@ internal class BeginCertificateCreationState : AcmeState
             }
         }
 
+        await Task.Delay(_options.Value.FailedRenewalBackoffPeriod, cancellationToken);
+
         return MoveTo<CheckForRenewalState>();
     }
 
