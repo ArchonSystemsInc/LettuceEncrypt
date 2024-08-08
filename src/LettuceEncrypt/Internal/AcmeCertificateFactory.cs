@@ -27,6 +27,7 @@ internal class AcmeCertificateFactory
     private readonly ICertificateAuthorityConfiguration _certificateAuthority;
     private readonly IPfxBuilderFactory _pfxBuilderFactory;
     private readonly TaskCompletionSource<object?> _appStarted = new();
+    private readonly IFailedOrderStore _failedOrderStore;
     private AcmeClient? _client;
     private IKey? _acmeAccountKey;
 
@@ -41,6 +42,7 @@ internal class AcmeCertificateFactory
         ICertificateAuthorityConfiguration certificateAuthority,
         IDnsChallengeProvider dnsChallengeProvider,
         IPfxBuilderFactory pfxBuilderFactory,
+        IFailedOrderStore failedOrderStore,
         IAccountStore? accountRepository = null)
     {
         _acmeClientFactory = acmeClientFactory;
@@ -53,6 +55,7 @@ internal class AcmeCertificateFactory
         _dnsChallengeProvider = dnsChallengeProvider;
         _certificateAuthority = certificateAuthority;
         _pfxBuilderFactory = pfxBuilderFactory;
+        _failedOrderStore = failedOrderStore;
 
         appLifetime.ApplicationStarted.Register(() => _appStarted.TrySetResult(null));
         if (appLifetime.ApplicationStarted.IsCancellationRequested)
@@ -159,6 +162,12 @@ internal class AcmeCertificateFactory
             throw new InvalidOperationException();
         }
 
+        if (_failedOrderStore.GetOrder(domains)?.Add(_options.Value.FailedRenewalBackoffPeriod) >= DateTimeOffset.UtcNow)
+        {
+            throw new InvalidOperationException(
+                $"Order failed less than {_options.Value.FailedRenewalBackoffPeriod.TotalMinutes} minutes ago, aborting for now");
+        }
+
         IOrderContext? orderContext = null;
         var orders = await _client.GetOrdersAsync();
         foreach (var order in orders)
@@ -184,20 +193,28 @@ internal class AcmeCertificateFactory
             break;
         }
 
-        if (orderContext == null)
+        try
         {
-            _logger.LogDebug("Creating new order for a certificate");
-            orderContext = await _client.CreateOrderAsync(domains.ToArray());
+            if (orderContext == null)
+            {
+                _logger.LogDebug("Creating new order for a certificate");
+                orderContext = await _client.CreateOrderAsync(domains.ToArray());
+            }
+
+            cancellationToken.ThrowIfCancellationRequested();
+            var authorizations = await _client.GetOrderAuthorizations(orderContext);
+
+            cancellationToken.ThrowIfCancellationRequested();
+            await Task.WhenAll(BeginValidateAllAuthorizations(authorizations, cancellationToken));
+
+            cancellationToken.ThrowIfCancellationRequested();
+            return await CompleteCertificateRequestAsync(domains.ToArray(), orderContext, cancellationToken);
         }
-
-        cancellationToken.ThrowIfCancellationRequested();
-        var authorizations = await _client.GetOrderAuthorizations(orderContext);
-
-        cancellationToken.ThrowIfCancellationRequested();
-        await Task.WhenAll(BeginValidateAllAuthorizations(authorizations, cancellationToken));
-
-        cancellationToken.ThrowIfCancellationRequested();
-        return await CompleteCertificateRequestAsync(domains.ToArray(), orderContext, cancellationToken);
+        catch
+        {
+            _failedOrderStore.AddOrder(domains, DateTimeOffset.UtcNow);
+            throw;
+        }
     }
 
     private IEnumerable<Task> BeginValidateAllAuthorizations(IEnumerable<IAuthorizationContext> authorizations,
